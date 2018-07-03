@@ -1,30 +1,36 @@
 <?php
 
-namespace App\Hierarchy;
+namespace App\Hierarchy\Metropolitan;
 
-use App\Hierarchy\Archbishop;
+use App\Hierarchy\Metropolitan\Archbishop\Archbishop;
+use App\Hierarchy\Patriarch;
+use InvalidArgumentException;
 
 class Metropolitan
-{   
+{
+    /** @var string */
+    protected $patriarch;
+
     /** @var string */
     protected $name;
     
     /** @var array */
     protected $archbishops = [];
     
-    public function __construct(string $name) 
+    public function __construct(string $name, Patriarch $patriarch)
     {
-	$this->name = $name;
+	    $this->name = $name;
+	    $this->patriarch = $patriarch;
     }
 
     public function setMetropolitanName($name)
     {
-	return $this->name = $name;
+	    return $this->name = $name;
     }
     
     public function addArchbishop(Archbishop $name): void
     {
-	$this->archbishops[] = $name;
+	    $this->archbishops[] = $name;
     }
     
     public function getMetropolitanName(): string
@@ -36,7 +42,7 @@ class Metropolitan
     {
 	    $key = $this->getArchbishopKey($name);
 
-	    unset($this->archbishops[$index]);
+	    unset($this->archbishops[$key]);
     }
     
     public function hasArchbishop(string $name): bool
@@ -52,9 +58,14 @@ class Metropolitan
 	    }
 	    throw new InvalidArgumentException ("Archbishop has name `${name}` does not exists");
     }
-    public function findArchbishop(string $name)
+    public function findArchbishop(string $name): ?int
     {
-	    return array_search($name, $this->archbishops);
+        foreach ($this->archbishops as $key => $archbishop) {
+            if (strtoupper($archbishop->getName()) == strtoupper($name)) {
+                return $key;
+            }
+        }
+        return false;
     }
     public function getArchbishops(): array
     {

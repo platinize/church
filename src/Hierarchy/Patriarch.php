@@ -2,8 +2,8 @@
 
 namespace App\Hierarchy;
 
-use App\Hierarchy\Metropolitan;
-
+use App\Hierarchy\Metropolitan\Metropolitan;
+use InvalidArgumentException;
 
 class Patriarch
 {
@@ -30,7 +30,7 @@ class Patriarch
     
     public function addMetropolitan(Metropolitan $name) 
     {
-	return $this->metropolitans[] = $name;
+	    return $this->metropolitans[] = $name;
     }
     
     public function getAllMetropolitans(): array
@@ -45,24 +45,30 @@ class Patriarch
     
     public function removeMetropolitan(string $name): void
     {
-	$key = $this->getMetropolitanKey($name);
+        $key = $this->getMetropolitanKey($name);
 
-	unset($this->metropolitans[$key]);
+        unset($this->metropolitans[$key]);
     }
     
     public function getMetropolitanKey(string $name): int
     {
-	$key = $this->findMetropolitan($name);
-	if ($key !== false) {
-	    return $key;
-	}
+        $key = $this->findMetropolitan($name);
 
-	throw new InvalidArgumentException ("Metropolitan has name `${name}` does not exists");
+        if ($key !== false) {
+            return $key;
+        }
+
+        throw new InvalidArgumentException ("Metropolitan has name `${name}` does not exists");
     }
     
     public function findMetropolitan(string $name): ?int
     {
-	return array_search($name, $this->metropolitans);
+        foreach ($this->metropolitans as $key => $metropolitan) {
+            if (strtoupper($metropolitan->getMetropolitanName()) == strtoupper($name)) {
+                return $key;
+            }
+        }
+	    return false;
     }
     
 }
